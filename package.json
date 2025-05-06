@@ -1,0 +1,13 @@
+
+{
+  "name": "ai-blog-idea-generator",
+  "version": "1.0.0",
+  "description": "AI-powered tool to generate SEO blog post ideas",
+  "main": "index.js",
+  "scripts": {
+    "start": "netlify dev"
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.9"
+  }
+}
