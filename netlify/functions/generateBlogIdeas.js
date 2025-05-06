@@ -1,7 +1,6 @@
 
 const fetch = require("node-fetch");
 
-// In-memory rate limit map (resets on cold start)
 const rateLimitMap = new Map();
 
 exports.handler = async (event) => {
@@ -44,15 +43,15 @@ exports.handler = async (event) => {
     return errorResponse(400, "Invalid input: " + err.message, allowOrigin);
   }
 
-  const prompt = `Generate 10 unique, SEO-friendly blog post title ideas based on the keyword: "${keyword}". 
-  Make sure each idea is concise, engaging, and useful for a blog writer. Return the list as plain text titles.`;
+  const prompt = `Generate 10 unique, SEO-friendly blog post title ideas based on the keyword: "${keyword}".
+Return only a plain text list, each title on a new line.`;
 
   try {
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: \`Bearer \${apiKey}\`,
+        Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
         model: "gpt-3.5-turbo",
@@ -62,8 +61,9 @@ exports.handler = async (event) => {
     });
 
     const data = await response.json();
+
     const raw = data?.choices?.[0]?.message?.content;
-    if (!raw) throw new Error("No response from OpenAI");
+    if (!raw) throw new Error("No content returned from OpenAI.");
 
     const ideas = raw
       .split(/\n+/)
@@ -81,7 +81,7 @@ exports.handler = async (event) => {
       body: JSON.stringify({ ideas }),
     };
   } catch (err) {
-    return errorResponse(500, err.message, allowOrigin);
+    return errorResponse(500, "OpenAI error: " + err.message, allowOrigin);
   }
 };
 
